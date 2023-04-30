@@ -38,6 +38,18 @@ if [ "$*" = "strapi" ]; then
 
   fi
 
+  if [ -f "yarn.lock" ]; then
+
+    echo "Building strapi with yarn ..."
+    yarn build
+
+  else
+
+    echo "Building strapi with npm ..."
+    npm run build
+
+  fi
+
   if [ "$NODE_ENV" = "production" ]; then
     STRAPI_MODE="start"
   elif [ "$NODE_ENV" = "development" ]; then
