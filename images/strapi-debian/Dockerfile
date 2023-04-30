@@ -1,6 +1,7 @@
 # BASE
+ARG NODE=node
 ARG NODE_VERSION=18
-FROM node:${NODE_VERSION} AS base-debian
+FROM ${NODE}:${NODE_VERSION} AS base-debian
 EXPOSE 1337
 
 FROM base-debian
