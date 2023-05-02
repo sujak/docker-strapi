@@ -63,6 +63,34 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/strapi:${{ steps.vars.outputs.tag }}-alpine
             ${{ secrets.DOCKER_USERNAME }}/strapi:latest-alpine
+      
+      - name: Build (default => debian arm64)
+        uses: docker/build-push-action@v2
+        with:
+          context: ./images/strapi-debian
+          build-args: |
+            STRAPI_VERSION=${{steps.vars.outputs.tag}}
+            NODE_VERSION=18
+            NODE=arm64v8/node
+          # platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/strapi:${{ steps.vars.outputs.tag }}-arm64
+            ${{ secrets.DOCKER_USERNAME }}/strapi:latest-arm64
+
+      - name: Build (alpine arm64)
+        uses: docker/build-push-action@v2
+        with:
+          context: ./images/strapi-alpine
+          build-args: |
+            STRAPI_VERSION=${{ steps.vars.outputs.tag }}
+            NODE_VERSION=18
+            NODE=arm64v8/node
+          # platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/strapi:${{ steps.vars.outputs.tag }}-alpine-arm64
+            ${{ secrets.DOCKER_USERNAME }}/strapi:latest-alpine-arm64
 
       - name: Docker Hub Description (README.md)
         uses: peter-evans/dockerhub-description@v2
