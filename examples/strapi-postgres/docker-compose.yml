@@ -1,4 +1,3 @@
-#Example docker compose to use after this repo has been cloned to /strapi/app/strapi-db/. Utilizes postgreSQL
 version: '3.0'
 
 services:
@@ -8,11 +7,11 @@ services:
     restart: unless-stopped
     ports:
       - "1337:1337"
-    environment: # Match your .env file below:
-      ADMIN_URL: tobemodified #ex. https://api.example.com/admin (default is http://localhost:1337/admin)
-      PUBLIC_URL: tobemodified #ex. https://api.example.com (default is http://localhost:1337)
-      IMG_ORIGIN: "toBeModified1,toBeModified2" #ex. 'self',data:,blob:,api.example.com,market-assets.strapi.io (default is 'self',data:,blob:)
-      CORS_ORIGIN: "toBeModified1,toBeModified2" #ex. https://mywebsite.example.com,https://api.example.com (default is *)
+    environment:
+      ADMIN_URL: tobemodified #ex. https://api.example.com/admin
+      PUBLIC_URL: tobemodified #ex. https://api.example.com
+      IMG_ORIGIN: "toBeModified1,toBeModified2" #ex. 'self',data:,blob:,api.example.com,market-assets.strapi.io
+      CORS_ORIGIN: "toBeModified1,toBeModified2" #ex. https://mywebsite.example.com,https://api.example.com
       DATABASE_CLIENT: postgres
       DATABASE_HOST: strapiDB
       DATABASE_PORT: 5432
@@ -20,16 +19,16 @@ services:
       DATABASE_USERNAME: tobemodified #ex. strapi
       DATABASE_PASSWORD: tobemodified #ex. strapi
       DATABASE_SSL: false
-      JWT_SECRET: tobemodified
-      ADMIN_JWT_SECRET: tobemodified
-      APP_KEYS: toBeModified1,toBeModified2
-      API_TOKEN_SALT: tobemodified
-      TRANSFER_TOKEN_SALT: tobemodified
+      JWT_SECRET: tobemodified #ex. JrWfVf/o9TbWQmpMgsJaYp==
+      ADMIN_JWT_SECRET: tobemodified #ex. MCpf2/FMiCJthF5d6Qup6iG==
+      APP_KEYS: toBeModified1,toBeModified2 #ex. w9/ZTuHUWNF2EP8gdfPcNn==,LqXKC52TsN/z/Y2rUGTa6m==,d7EKo2Tp9SiGf82ZqrmSnB==,TAu2SJx6BDc7aYUyqiwxKs==
+      API_TOKEN_SALT: tobemodified #ex. j43/kBRfXULfPpJnzPCJzi==
+      TRANSFER_TOKEN_SALT: tobemodified #ex. GCX3NkRSyHrDxhfgwnmCm3==
       NODE_ENV: development # or production
       BUILD: true
       UPGRADE: false
     volumes:
-      - /strapi/app/strapi-db/:/srv/app
+      - ./app:/srv/app # to use an existing project or create a new project inside the folder ./app
     networks:
       - strapi
     depends_on:
