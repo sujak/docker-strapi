@@ -23,11 +23,12 @@ Using Docker Compose, create `docker-compose.yml` file with the following conten
 version: "3"
 services:
   strapi:
+    container_name: strapi
     image: vshadbolt/strapi
-    environment:
-      NODE_ENV: development # or production
     ports:
       - "1337:1337"
+    environment:
+      NODE_ENV: development # or production
     # volumes:
     #   - ./app:/srv/app # mount an existing strapi project
 ```
@@ -38,7 +39,7 @@ or using Docker:
 docker run -d -p 1337:1337 vshadbolt/strapi --env NODE_ENV=development
 ```
 
-You can find more example on [GitHub](https://github.com/vshadbolt/docker-strapi/tree/main/examples).
+You can find more examples on [GitHub](https://github.com/vshadbolt/docker-strapi/tree/main/examples).
 
 ---
 
@@ -53,6 +54,10 @@ This image allows you to create a new strapi project or run an existing strapi p
 
 > The [Content-Type Builder](https://strapi.io/features/content-types-builder) plugin is disabled WHEN `$NODE_ENV = production`.
 
+Note that for existing projects, `config/admin.js`, `config/server.js`, and `config/middlewares.js` files will need to be configured correctly not to use `http://localhost:1337`.
+
+---
+
 ## Creating a new strapi project
 
 When running this image, strapi will check if there is a project in the `/srv/app` folder of the container. If there is
@@ -62,11 +67,22 @@ command in the container /srv/app folder.
 
 This command creates a project with an SQLite database. Then starts it on port `1337`.
 
+This docker image will also update the `config/admin.js`, `config/server.js`, and `config/middlewares.js` files to accomodate setting image sources, CORS params, admin url(s), and public server url(s) from the docker command. See below for example configurations.
+
+- Add `ADMIN_URL: tobemodified` to your docker command to set a custom domain for your admin page(s). Ex. `https://api.example.com/admin`. Without adding the command, config will default to `http://localhost:1337/admin`
+- Add `PUBLIC_URL: tobemodified` to your docker command to set a custom domain for your api endpoint(s). Ex. `https://api.example.com` Without adding the command, config will default to `http://localhost:1337`
+- Add `IMG_ORIGIN: "toBeModified1,toBeModified2"` to your docker command to allow new image sources for your project. Ex. `'self',data:,blob:,api.example.com,market-assets.strapi.io`. Without adding the command, config will default to `'self',data:,blob:`
+- Add `CORS_ORIGIN: "toBeModified1,toBeModified2"` to your docker command to allow new CORS origin sources to your project. Ex. `https://myfrontendwebsite.example.com,https://api.example.com`. Without adding the command, config will default to `*`
+
+- The official documentation for strapi and these files is linked below.
+
+---
+
 **Environment variables**
 
-When creating a new project with this image you can pass database configurations to
+When creating a new project with this image you can pass in database configurations to
 the [`strapi new`](https://strapi.io/documentation/developer-docs/latest/developer-resources/cli/CLI.html#strapi-new)
-command.
+command. You're also able to add these configurations to your docker command for existing strapi projects
 
 - `DATABASE_CLIENT` a database provider supported by Strapi: (sqlite, postgres, mysql ,mongo).
 - `DATABASE_HOST` database host.
@@ -75,12 +91,35 @@ command.
 - `DATABASE_USERNAME` database username.
 - `DATABASE_PASSWORD` database password.
 - `DATABASE_SSL` boolean for SSL.
+- `JWT_SECRET` random string
+- `ADMIN_JWT_SECRET` random string
+- `APP_KEYS` randomstring1,randomstring2
+- `API_TOKEN_SALT` random string
+- `TRANSFER_TOKEN_SALT` random string
 - `EXTRA_ARGS` pass extra args to
   the [`strapi new`](https://strapi.io/documentation/developer-docs/latest/developer-resources/cli/CLI.html#strapi-new).
+
+---
 
 ## Running an existing strapi project
 
 To run an existing project, you can mount the project folder in the container at `/srv/app`.
+
+---
+
+## Modifying files in the /config directory
+
+After modifying these files, the project will need to be rebuilt to account for the changes. To do so, add the following configuration to the docker command. Not that not adding this argument will negate any changes made within the `/config` directory until it is added. It is particularily important for any URL changes or your project will not be accessible.
+
+- `BUILD: true`
+
+---
+
+## Updating packages on an existing strapi project
+
+To update packages in an existing project, pass in the below command. Note that this will potentially upgrade packages across major versions and has the possibility of breaking the project. Please remember to backup responsibly.
+
+- `UPGRADE: true`
 
 ---
 
@@ -89,41 +128,9 @@ To run an existing project, you can mount the project folder in the container at
 To deploy an existing strapi project to production using Docker, it is recommended to build an image for your project
 based on [node v18](https://hub.docker.com/_/node).
 
-Example of Dockerfile:
+The official docker documentation for strapi, including example Dockerfiles, is available on [https://docs.strapi.io/dev-docs/installation/docker](https://docs.strapi.io/dev-docs/installation/docker).
 
-```dockerfile
-FROM node:18
-# alternatively you can use FROM strapi/base:latest
-
-# Set up working directory
-WORKDIR /app
-
-# Copy package.json to root directory
-COPY package.json .
-
-# Copy yarn.lock to root directory
-COPY yarn.lock .
-
-# Install dependencies, but not generate a yarn.lock file and fail if an update is needed
-RUN yarn install --frozen-lockfile
-
-# Copy strapi project files
-COPY favicon.ico ./favicon.ico
-COPY src/ src/
-COPY public/ public/
-COPY database/ database/
-COPY config/ config/
-# ...
-
-# Build admin panel
-RUN yarn build
-
-# Run on port 1337
-EXPOSE 1337
-
-# Start strapi server
-CMD ["yarn", "start"]
-```
+---
 
 # Official Documentation
 

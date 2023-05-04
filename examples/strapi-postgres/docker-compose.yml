@@ -1,35 +1,61 @@
-version: '3'
-services:
-  strapi-v4:
-    image: vshadbolt/strapi
-    restart: always
-    container_name: strapi-v4
-    ports:
-      - '1337:1337'
-    environment:
-      NODE_ENV: development
-      DATABASE_CLIENT: postgres
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_NAME: postgres
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_SSL: false # boolean for SSL.
-    volumes:
-      - app:/srv/app # create a new project in app volume
-  postgres:
-    restart: always
-    image: postgres
-    container_name: postgres
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    expose:
-      - 5432
-    volumes:
-      - data:/var/lib/postgresql/data
+#Example docker compose to use after this repo has been cloned to /strapi/app/strapi-db/. Utilizes postgreSQL
+version: '3.0'
 
+services:
+  strapi:
+    container_name: strapi
+    image: vshadbolt/strapi
+    restart: unless-stopped
+    ports:
+      - "1337:1337"
+    environment: # Match your .env file below:
+      ADMIN_URL: tobemodified #ex. https://api.example.com/admin (default is http://localhost:1337/admin)
+      PUBLIC_URL: tobemodified #ex. https://api.example.com (default is http://localhost:1337)
+      IMG_ORIGIN: "toBeModified1,toBeModified2" #ex. 'self',data:,blob:,api.example.com,market-assets.strapi.io (default is 'self',data:,blob:)
+      CORS_ORIGIN: "toBeModified1,toBeModified2" #ex. https://mywebsite.example.com,https://api.example.com (default is *)
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: strapiDB
+      DATABASE_PORT: 5432
+      DATABASE_NAME: tobemodified #ex. strapi
+      DATABASE_USERNAME: tobemodified #ex. strapi
+      DATABASE_PASSWORD: tobemodified #ex. strapi
+      DATABASE_SSL: false
+      JWT_SECRET: tobemodified
+      ADMIN_JWT_SECRET: tobemodified
+      APP_KEYS: toBeModified1,toBeModified2
+      API_TOKEN_SALT: tobemodified
+      TRANSFER_TOKEN_SALT: tobemodified
+      NODE_ENV: development # or production
+      BUILD: true
+      UPGRADE: false
+    volumes:
+      - /strapi/app/strapi-db/:/srv/app
+    networks:
+      - strapi
+    depends_on:
+      - strapiDB
+
+  strapiDB:
+    container_name: strapiDB
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: tobemodified #ex. strapi
+      POSTGRES_USER: tobemodified #ex. strapi
+      POSTGRES_PASSWORD: tobemodified #ex. strapi
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - strapi
+  
 volumes:
-  data:
-  app:
+  postgres:
+    external: true
+    name: postgres
+
+networks:
+  strapi:
+    name: Strapi
+    driver: bridge
