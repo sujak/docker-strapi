@@ -42,7 +42,7 @@ EOT
 
     cat <<-EOT >> 'config/admin.js'
 module.exports = ({ env }) => ({
-  url: env('ADMIN_URL', '/admin'),
+  url: env('ADMIN_URL', 'http://localhost:1337/admin'),
   auth: {
     secret: env('ADMIN_JWT_SECRET'),
   },
@@ -67,7 +67,7 @@ module.exports = ({env}) => ([
         useDefaults: true,
         directives: {
           'connect-src': ["'self'", 'http:', 'https:'],
-          'img-src': env('IMG_ORIGIN', "'self',data:,blob:").split(','),
+          'img-src': env('IMG_ORIGIN', "'self',data:,blob:,market-assets.strapi.io").split(','),
           upgradeInsecureRequests: null,
         },
       },
