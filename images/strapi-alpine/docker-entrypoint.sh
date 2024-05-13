@@ -9,10 +9,9 @@ if [ "$*" = "strapi" ]; then
 
     EXTRA_ARGS=${EXTRA_ARGS}
 
-    echo "Using strapi $(strapi version)"
     echo "No project found at /srv/app. Creating a new strapi project ..."
 
-    DOCKER=true strapi new . --no-run \
+    DOCKER=true yarn create strapi-app . --no-run \
       --dbclient=$DATABASE_CLIENT \
       --dbhost=$DATABASE_HOST \
       --dbport=$DATABASE_PORT \
@@ -108,6 +107,48 @@ EOT
 
   fi
 
+  echo "Checking for React and Styled Components..."
+
+  if [ -f "yarn.lock" ]; then
+
+    if ! grep -q "\"react\"" package.json;then
+      echo "Adding react with npm..."
+      yarn add "react@^18.0.0"
+    fi
+    if ! grep -q "\"react-dom\"" package.json;then
+      echo "Adding react-dom with npm..."
+      yarn add "react-dom@^18.0.0"
+    fi
+    if ! grep -q "\"react-router-dom\"" package.json;then
+      echo "Adding react-router-dom with npm..."
+      yarn add "react-router-dom@^5.3.4"
+    fi
+    if ! grep -q "\"styled-components\"" package.json;then
+      echo "Adding styled-components with npm..."
+      yarn add "styled-components@^5.3.3"
+    fi
+
+  else
+
+    if ! grep -q "\"react\"" package.json;then
+      echo "Adding react with npm..."
+      npm i react@"^18.0.0"
+    fi
+    if ! grep -q "\"react-dom\"" package.json;then
+      echo "Adding react-dom with npm..."
+      npm i react-dom@"^18.0.0"
+    fi
+    if ! grep -q "\"react-router-dom\"" package.json;then
+      echo "Adding react-router-dom with npm..."
+      npm i react-router-dom@"^5.3.4"
+    fi
+    if ! grep -q "\"styled-components\"" package.json;then
+      echo "Adding styled-components with npm..."
+      npm i styled-components@"^5.3.3"
+    fi
+
+  fi
+
   UPGRADE=${UPGRADE:-false}
 
   if [ "$UPGRADE" = "true" ]; then
@@ -151,7 +192,8 @@ EOT
   fi
 
   echo "Starting your app (with ${STRAPI_MODE:-develop})..."
-  exec strapi "${STRAPI_MODE:-develop}"
+
+  exec yarn "${STRAPI_MODE:-develop}"
 
 else
   exec "$@"

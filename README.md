@@ -88,7 +88,7 @@ This docker image will also update the `config/admin.js`, `config/server.js`, an
 ## Environment variables
 
 When creating a new project with this image you can pass in database configurations to
-the [`strapi new`](https://strapi.io/documentation/developer-docs/latest/developer-resources/cli/CLI.html#strapi-new)
+the [`create strapi-app`](https://docs.strapi.io/dev-docs/quick-start#-part-a-create-a-new-project-with-strapi)
 command. You're also able to add these configurations to your docker command for existing strapi projects
 
 - `DATABASE_CLIENT` a database provider supported by Strapi: (sqlite, postgres, mysql ,mongo).
@@ -126,6 +126,12 @@ After modifying these files directly or changing their respective environment va
 To update packages in an existing project, pass in the below command. Note that this will potentially upgrade packages across major versions and has the possibility of breaking the project. Please remember to backup responsibly.
 
 - `UPGRADE: true`
+
+---
+
+## Missing React modules
+
+The docker entrypoint and docker file have been modified to replace the `strapi new` command (now deprecated) with `yarn create strapi-app` which will gather the required packages. With this change, the image is now substantially smaller. For existing strapi projects, the updated entrypoint will add the missing packages [`react`, `react-dom`, `react-router-dom`, `styled-components`] if they haven't already been installed. Please remember to backup responsibly.
 
 ---
 

@@ -6,10 +6,6 @@ EXPOSE 1337
 
 FROM base-debian
 
-ARG STRAPI_VERSION=latest
-
-RUN yarn config set network-timeout 600000 -g && yarn global add @strapi/strapi@${STRAPI_VERSION}
-
 RUN mkdir -p /srv/app && chown 1000:1000 -R /srv/app
 
 WORKDIR /srv/app
