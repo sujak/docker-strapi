@@ -18,7 +18,7 @@ jobs:
   get-version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
 
@@ -27,6 +27,6 @@ jobs:
         run: |
           echo "${{ github.event.inputs.version }}" > release-versions/strapi-latest.txt
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: New manual release ${{ github.event.inputs.version }}
