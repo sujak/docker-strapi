@@ -120,7 +120,7 @@ EOT
 
   else
     
-    current_strapi_version="$(yarn list --pattern strapi --depth=0 | grep @strapi/strapi | cut -d @ -f 3)"
+    current_strapi_version="$(npm list --pattern strapi --depth=0 | grep @strapi/strapi | cut -d @ -f 3)"
     current_strapi_code="$(echo "${current_strapi_version}" | tr -d "." )"
     image_strapi_code="$(echo "${STRAPI_VERSION}" | tr -d "." )"
     if [ "${image_strapi_code}" -gt "${current_strapi_code}" ]; then
