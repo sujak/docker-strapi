@@ -99,6 +99,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: vshadbolt/strapi
           readme-filepath: README.md
+          enable-url-completion: true
 
       - name: Create Release in GitHub
         id: create_release
