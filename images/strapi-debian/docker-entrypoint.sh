@@ -9,9 +9,10 @@ if [ "$*" = "strapi" ]; then
 
     EXTRA_ARGS=${EXTRA_ARGS}
 
+    echo "Using strapi v${STRAPI_VERSION}"
     echo "No project found at /srv/app. Creating a new strapi project ..."
 
-    DOCKER=true yarn create strapi-app . --no-run \
+    DOCKER=true npx create-strapi-app@${STRAPI_VERSION} . --no-run \
       --dbclient=$DATABASE_CLIENT \
       --dbhost=$DATABASE_HOST \
       --dbport=$DATABASE_PORT \
@@ -58,6 +59,7 @@ EOT
 
     cat <<-EOT >> 'config/middlewares.js'
 module.exports = ({env}) => ([
+  'strapi::logger',
   'strapi::errors',
   {
     name: 'strapi::security',
@@ -82,7 +84,6 @@ module.exports = ({env}) => ([
     }
   },
   'strapi::poweredBy',
-  'strapi::logger',
   'strapi::query',
   'strapi::body',
   'strapi::session',
@@ -107,62 +108,40 @@ EOT
 
   fi
 
-  echo "Checking for React and Styled Components..."
-
   if [ -f "yarn.lock" ]; then
 
-    if ! grep -q "\"react\"" package.json;then
-      echo "Adding react with npm..."
-      yarn add "react@^18.0.0"
-    fi
-    if ! grep -q "\"react-dom\"" package.json;then
-      echo "Adding react-dom with npm..."
-      yarn add "react-dom@^18.0.0"
-    fi
-    if ! grep -q "\"react-router-dom\"" package.json;then
-      echo "Adding react-router-dom with npm..."
-      yarn add "react-router-dom@^5.3.4"
-    fi
-    if ! grep -q "\"styled-components\"" package.json;then
-      echo "Adding styled-components with npm..."
-      yarn add "styled-components@^5.3.3"
+    current_strapi_version="$(yarn list --pattern strapi --depth=0 | grep @strapi/strapi | cut -d @ -f 3)"
+    current_strapi_code="$(echo "${current_strapi_version}" | tr -d "." )"
+    image_strapi_code="$(echo "${STRAPI_VERSION}" | tr -d "." )"
+    if [ "${image_strapi_code}" -gt "${current_strapi_code}" ]; then
+      echo "Strapi update v${STRAPI_VERSION} found. Currently using v${current_strapi_version}. Updating using yarn ..."
+      yarn add "@strapi/strapi@${STRAPI_VERSION}" "@strapi/plugin-users-permissions@${STRAPI_VERSION}" "@strapi/plugin-i18n@${STRAPI_VERSION}" "@strapi/plugin-cloud@${STRAPI_VERSION}" --prod --silent  || echo "Update failed!"
     fi
 
   else
-
-    if ! grep -q "\"react\"" package.json;then
-      echo "Adding react with npm..."
-      npm i react@"^18.0.0"
-    fi
-    if ! grep -q "\"react-dom\"" package.json;then
-      echo "Adding react-dom with npm..."
-      npm i react-dom@"^18.0.0"
-    fi
-    if ! grep -q "\"react-router-dom\"" package.json;then
-      echo "Adding react-router-dom with npm..."
-      npm i react-router-dom@"^5.3.4"
-    fi
-    if ! grep -q "\"styled-components\"" package.json;then
-      echo "Adding styled-components with npm..."
-      npm i styled-components@"^5.3.3"
+    
+    current_strapi_version="$(yarn list --pattern strapi --depth=0 | grep @strapi/strapi | cut -d @ -f 3)"
+    current_strapi_code="$(echo "${current_strapi_version}" | tr -d "." )"
+    image_strapi_code="$(echo "${STRAPI_VERSION}" | tr -d "." )"
+    if [ "${image_strapi_code}" -gt "${current_strapi_code}" ]; then
+      echo "Strapi update v${STRAPI_VERSION} found. Currently using v${current_strapi_version}. Updating using npm ..."
+      npm install @strapi/strapi@"${STRAPI_VERSION}" @strapi/plugin-users-permissions@"${STRAPI_VERSION}" @strapi/plugin-i18n@"${STRAPI_VERSION}" @strapi/plugin-cloud@"${STRAPI_VERSION}" --only=prod --silent  || echo "Update failed!"
     fi
 
   fi
 
-  UPGRADE=${UPGRADE:-false}
+  if [ -f "yarn.lock" ]; then
 
-  if [ "$UPGRADE" = "true" ]; then
+    if ! grep -q "\"react\"" package.json; then
+      echo "Adding React and Styled Components with yarn..."
+      yarn add "react@^18.0.0" "react-dom@^18.0.0" "react-router-dom@^5.3.4" "styled-components@^5.3.3" --prod --silent || echo "Adding React and Styled Components failed!"
+    fi
 
-    if [ -f "yarn.lock" ]; then
+  else
 
-      echo "Updating Node modules using yarn ..."
-      yarn upgrade --latest --silent
-
-    else
-
-      echo "Updating Node modules using npm ..."
-      npm i -g npm-check-updates --silent && ncu -u && npm i --silent
-
+    if ! grep -q "\"react\"" package.json; then
+      echo "Adding React and Styled Components with npm..."
+      npm install react@"^18.0.0" react-dom@"^18.0.0" react-router-dom@"^5.3.4" styled-components@"^5.3.3" --only=prod --silent || echo "Adding React and Styled Components failed!"
     fi
 
   fi

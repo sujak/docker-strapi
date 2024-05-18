@@ -26,7 +26,6 @@ services:
       TRANSFER_TOKEN_SALT: tobemodified #ex. GCX3NkRSyHrDxhfgwnmCm3==
       NODE_ENV: development # or production
       BUILD: true
-      UPGRADE: false
     volumes:
       - ./app:/srv/app # to use an existing project or create a new project inside the folder ./app
     networks:
@@ -36,7 +35,7 @@ services:
 
   strapiDB:
     container_name: strapiDB
-    image: postgres
+    image: postgres:15.2
     restart: unless-stopped
     ports:
       - "5432:5432"
