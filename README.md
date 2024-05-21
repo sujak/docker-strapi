@@ -11,7 +11,7 @@ API with no effort.
 
 [Docker Hub](https://hub.Docker.com/r/vshadbolt/strapi)
 
-[![Docker Pulls](https://img.shields.io/Docker/pulls/vshadbolt/strapi.svg?style=for-the-badge)](https://hub.Docker.com/r/vshadbolt/strapi)
+[![Docker Pulls](https://img.shields.io/docker/pulls/vshadbolt/strapi.svg?style=for-the-badge)](https://hub.Docker.com/r/vshadbolt/strapi)
 
 ---
 
@@ -81,7 +81,7 @@ Finally, we have a variable for re-building Strapi. After modifying any of the f
 
 - `BUILD: tobemodified`: A boolean for re-building the Strapi project. Ex. true
 
-> Here is a completed example [compose file](./examples/strapi-postgres/docker-compose.yml) for the available environment variables as well as the configuration for a postgres database. You can find more examples [here](https://github.com/vshadbolt/Docker-strapi/tree/main/examples).
+> Here is a completed example [compose file](./examples/strapi-postgres/docker-compose.yml) for the available environment variables as well as the configuration for a postgres database. You can find more examples [here](https://github.com/V-Shadbolt/docker-strapi/tree/main/examples).
 
 - The official documentation for strapi and these files is linked below.
 
