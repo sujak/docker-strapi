@@ -12,7 +12,7 @@ if [ "$*" = "strapi" ]; then
     echo "Using strapi v$STRAPI_VERSION"
     echo "No project found at /srv/app. Creating a new strapi project ..."
 
-    DOCKER=true npx create-strapi-app@$STRAPI_VERSION . --no-run \
+    DOCKER=true npx create-strapi-app@$STRAPI_VERSION . --no-run --skip-cloud \
       --dbclient=$DATABASE_CLIENT \
       --dbhost=$DATABASE_HOST \
       --dbport=$DATABASE_PORT \
@@ -21,7 +21,7 @@ if [ "$*" = "strapi" ]; then
       --dbpassword=$DATABASE_PASSWORD \
       --dbssl=$DATABASE_SSL \
       $EXTRA_ARGS
-    
+
     echo "" >| 'config/server.js'
     echo "" >| 'config/admin.js'
     echo "" >| 'config/middlewares.js'
@@ -119,7 +119,7 @@ EOT
     fi
 
   else
-    
+
     current_strapi_version="$(npm list | grep @strapi/strapi | cut -d @ -f 3)"
     current_strapi_code="$(echo "${current_strapi_version}" | tr -d "." )"
     image_strapi_code="$(echo "${STRAPI_VERSION}" | tr -d "." )"
